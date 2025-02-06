@@ -14,6 +14,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] Vector2 teleportPosition = new Vector2(-20, 7); // Target position for teleportation
 
+
+    Animator anim;
+
     Vector2 dashDirection;
     bool isDashing = false;
     float dashCooldownTimer = 0f;
@@ -21,10 +24,12 @@ public class PlayerMovement : MonoBehaviour
 
     float direction = 0;
     float numJumps = 0;
+    bool isFacingRight = true;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -41,6 +46,9 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             Move(direction);
+            if ((isFacingRight && direction == -1) || (!isFacingRight && direction == 1)){
+                Flip();
+            }
         }
     }
 
@@ -55,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
         if (!isDashing)
         {
             rb.linearVelocity = new Vector2(dir * speed, rb.linearVelocity.y);
+            anim.SetBool("isRunning", dir != 0); 
         }
     }
 
@@ -127,5 +136,12 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("dead");
             transform.position = new Vector2(-20, 7);
          }
+    }
+
+    private void Flip(){
+        isFacingRight = !isFacingRight; 
+        Vector3 newLocalScale = transform.localScale;
+        newLocalScale.x *= -1f;
+        transform.localScale = newLocalScale; 
     }
 }
